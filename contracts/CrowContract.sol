@@ -15,7 +15,7 @@ interface IERC20 {
 
 contract CrowdFund  {
     event Launch(uint256 campaignId, uint256 goal, address creator, uint256 startAt, uint256 endAt);
-    //event Cancel;
+    event Cancel(uint campaignId);
     //event Pledge;
     event Claim(uint id);
     event Refund(uint id, address indexed caller, uint amount);
@@ -58,16 +58,23 @@ contract CrowdFund  {
 
         emit Launch(countCampaign, _goal , msg.sender, _startAt, _endAt); //Emit the Launch event
     }
-       //completar
 
-        //emit //completar
+   function cancel(uint256 _campaignId) external{
+        Campaign memory campaign = campaigns[_campaignId];
+        require(msg.sender ==  campaign.creator, "Only the owner of the campaign can cancel!");
+        require(block.timestamp < campaign.startAt, "The campaign doesn't started");
+        delete campaigns[_campaignId];
+        emit Cancel(_campaignId);
+   }
     
 
-   // function cancel //completar
-    
+    function pledge(uint256 _campaignId, uint256 _amountToPledge) external {
+         Campaign memory campaign = campaigns[_campaignId];
+        require(campaign.startAt >= block.timestamp, "The campaign doesn't start yet");
+        require(block.timestamp  < campaign.endAt, "The campaign is ended");
 
-    //function pledge //completar
-    
+        campaign.pledged += _amountToPledge;
+    }    
 
     //function claim(uint _id) external {
         //completar
