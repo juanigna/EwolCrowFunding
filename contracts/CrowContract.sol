@@ -2,7 +2,6 @@
 pragma solidity ^0.8.7;
 
 interface IERC20 {
-    //completar
     // function totalSupply() external view returns (uint);
     // function balanceOf(address account) external view returns (uint);
     // function transfer(address recipient, uint amount) external returns (bool);
@@ -15,8 +14,8 @@ interface IERC20 {
 
 contract CrowdFund  {
     event Launch(uint256 campaignId, uint256 goal, address creator, uint256 startAt, uint256 endAt);
-    event Cancel(uint campaignId);
-    //event Pledge;
+    event Cancel(uint256 campaignId);
+    event Pledge(uint256 campaignId, uint256 _amount, address pledger);
     event Claim(uint id);
     event Refund(uint id, address indexed caller, uint amount);
 
@@ -35,7 +34,10 @@ contract CrowdFund  {
         bool claimed;
     }
 
-    mapping(uint256 => Campaign) public campaigns;
+    mapping(uint256 => Campaign) public campaigns; //mapping for the created campaigns
+    mapping(uint256 => mapping(address => uint256)) amountPledged; //mapping the pledged amounts for each campaign
+
+
 
     uint256 countCampaign = 0; //count for the campaigns
     IERC20 public immutable token;
@@ -69,11 +71,14 @@ contract CrowdFund  {
     
 
     function pledge(uint256 _campaignId, uint256 _amountToPledge) external {
-         Campaign memory campaign = campaigns[_campaignId];
-        require(campaign.startAt >= block.timestamp, "The campaign doesn't start yet");
-        require(block.timestamp  < campaign.endAt, "The campaign is ended");
+        Campaign memory campaign = campaigns[_campaignId];
+        require(campaign.startAt >= block.timestamp, "The campaign doesn't start yet"); //require if the campaign started
+        require(block.timestamp  < campaign.endAt, "The campaign is ended"); //require if the campaign doesn't end
 
-        campaign.pledged += _amountToPledge;
+        campaign.pledged += _amountToPledge; 
+        amountPledged[_campaignId][msg.sender] += _amountToPledge; //Add the amount to the amountPledged Campaign
+
+        emit Pledge(_campaignId, _amountToPledge, msg.sender); //Launch the Pledge event
     }    
 
     //function claim(uint _id) external {
