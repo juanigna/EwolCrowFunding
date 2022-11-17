@@ -8,6 +8,13 @@ interface IERC20 {
     event Approval(address indexed owner, address indexed spender, uint value);
 }
 
+/*
+
+the variables with the  " _ " are internal variables
+
+*/
+
+
 contract CrowdFund {
     event Launch(uint256 campaignId, uint256 goal, address creator, uint256 startAt, uint256 endAt);
     event Cancel(uint256 campaignId);
@@ -87,9 +94,10 @@ contract CrowdFund {
         require(block.timestamp > campaign.endAt, "The campaign doesn't ended!");
         require(campaign.claimed == false, "The campaign is alredy claimded");
 
-        // claimed = true
         campaign.claimed=true;
         paymentToken.transfer(msg.sender, campaign.pledged);
+
+
         emit Claim(_campaignId);
     }
 
