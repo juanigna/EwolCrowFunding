@@ -12,12 +12,16 @@ the variables with the  " _ " are internal variables
 
 
 contract CrowdFund {
+
+    //Events to be emmited while the functions or contract are running
     event Launch(uint256 campaignId, uint256 goal, address creator, uint256 startAt, uint256 endAt);
     event Cancel(uint256 campaignId);
     event Pledge(uint256 campaignId, uint256 _amount, address pledger);
     event Claim(uint id);
     event Refund(uint id, address indexed caller, uint amount);
 
+
+    //Struct for campaign
     struct Campaign {
         // Creator of campaign
         address creator;
@@ -35,17 +39,19 @@ contract CrowdFund {
         bool isCancel;
     }
 
+    //Mappings for campaign and pledged amount
     mapping(uint256 => Campaign) public campaigns; //mapping for the created campaigns
     mapping(uint256 => mapping(address => uint256)) public amountPledged; //mapping the pledged amounts for each campaign
 
     uint256 countCampaign = 0; //count for the campaigns
     IERC20 public immutable paymentToken;
     
-   
+   //Initialize the paymentToken
     constructor(address _paymentToken) {
        paymentToken = IERC20(_paymentToken);
     }
 
+    //Function that launch the campaign
     function launch(
         uint _goal,
         uint32 _startAt,
@@ -60,6 +66,8 @@ contract CrowdFund {
         emit Launch(countCampaign, _goal , msg.sender, _startAt, _endAt); //Emit the Launch event
     }
 
+
+    //Function that cancels the campaign
    function cancel(uint256 _campaignId) external{
         Campaign memory campaign = campaigns[_campaignId];
         require(msg.sender ==  campaign.creator, "Only the owner of the campaign can cancel!");
@@ -68,7 +76,7 @@ contract CrowdFund {
         emit Cancel(_campaignId);
    }
     
-
+    //Function that pledge an undeterminated amount to a campaign
     function pledge(uint256 _campaignId, uint256 _amountToPledge) external {
         Campaign memory campaign = campaigns[_campaignId];
         require(_amountToPledge >= 1 , "The minimun to pledge is 1");
@@ -83,6 +91,8 @@ contract CrowdFund {
         emit Pledge(_campaignId, _amountToPledge, msg.sender); //Launch the Pledge event
     }    
 
+
+    //Function that the owner of the campaign can claim the money
     function claim(uint256 _campaignId) external {
         Campaign memory campaign = campaigns[_campaignId];
         require(msg.sender == campaign.creator, "Only the owner of the campaign can call this function!");
@@ -97,6 +107,8 @@ contract CrowdFund {
         emit Claim(_campaignId);
     }
 
+
+    //Function that refund the money to the pledgers
     function refund(uint256 _campaignId) external {
         Campaign memory campaign = campaigns[_campaignId];
         if(campaign.isCancel != false){

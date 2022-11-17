@@ -7,14 +7,16 @@
 const hre = require("hardhat");
 
 async function main() {
-  const [deployer] = hre.ethers.getSigners(); 
-  const CrowFunding = await hre.ethers.getContractFactory("CrowFund");
-  const CrowInstance = await Lock.deploy();
+  const TokenFactory = await hre.ethers.getContractFactory("ERC20Basic");
+  const TokenInstance = await TokenFactory.deploy();
+  const CrowFunding = await hre.ethers.getContractFactory("CrowdFund");
+  const CrowInstance = await CrowFunding.deploy(TokenInstance.address);
 
-  await lock.deployed();
+  await TokenInstance.deployed()
+  await CrowInstance.deployed();
 
   console.log(
-    `Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
+    `CrowFunding deployed to ${CrowInstance.address}`
   );
 }
 

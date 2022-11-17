@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
 interface IERC20 {
@@ -25,8 +26,8 @@ contract ERC20Basic is IERC20 {
     uint override public totalSupply;
     mapping(address => uint) override public balanceOf;
     mapping(address => mapping(address => uint)) override public allowance;
-    string public name = "Solidity by Example";
-    string public symbol = "SOLBYEX";
+    string public name = "EwolCrowfunding";
+    string public symbol = "EWC";
     uint8 public decimals = 18;
 
     function transfer(address recipient, uint amount) external override returns (bool) {
