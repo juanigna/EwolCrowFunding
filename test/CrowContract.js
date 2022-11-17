@@ -16,8 +16,10 @@ describe("CrowFunding", function(){
             signers.firstUser = firstUser;
             paymentTokenFactory = await ethers.getContractFactory("ERC20Basic");
             PaymentTokenInstance = await paymentTokenFactory.deploy();
+            await PaymentTokenInstance.deployed();
             ContractFactory = await ethers.getContractFactory("CrowdFund");
             ContractInstance = await ContractFactory.deploy(PaymentTokenInstance.address);
+            await ContractInstance.deployed();
         })
     })
     
@@ -27,6 +29,14 @@ describe("CrowFunding", function(){
             let PaymentTokenInstanceSeconUser = await PaymentTokenInstance.connect(signers.firstUser);
             let mintTokenTx = await PaymentTokenInstanceSeconUser.mint(100);
             await mintTokenTx.wait();
+        })
+    })
+
+    describe("Launch a campaign", function(){
+        it("Should allow to launch a campaign", async function(){
+            let firstUserInstance = await ContractInstance.connect(signers.deployer);
+            let launchCampaignTx = await firstUserInstance.launch(10, 1668708888, 1668709999);
+            await launchCampaignTx.wait();
         })
     })
 })
